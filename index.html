@@ -52,7 +52,6 @@
             overflow: hidden;
         }
 
-        /* Slide-in cart animation */
         #cart-drawer {
             transform: translateX(100%);
             transition: transform 0.3s ease-in-out;
@@ -61,7 +60,6 @@
             transform: translateX(0);
         }
 
-        /* Overlay fade */
         #cart-overlay {
             opacity: 0;
             pointer-events: none;
@@ -72,7 +70,6 @@
             pointer-events: auto;
         }
 
-        /* Toast animations */
         .toast {
             animation: slideUp 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
         }
@@ -123,7 +120,6 @@
     <main class="flex-grow">
         <!-- Hero Section -->
         <section class="relative bg-gradient-to-r from-puja-900 via-puja-700 to-puja-600 text-white overflow-hidden">
-            <!-- Decorative Mandalas / Background elements -->
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full border-[20px] border-white border-dashed animate-[spin_60s_linear_infinite]"></div>
                 <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full border-[20px] border-white border-dashed animate-[spin_40s_linear_infinite_reverse]"></div>
@@ -142,7 +138,6 @@
                 </a>
             </div>
             
-            <!-- Beautiful bottom wave -->
             <div class="absolute bottom-0 w-full overflow-hidden leading-none">
                 <svg class="relative block w-full h-[40px] md:h-[60px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                     <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.2,201.2,109.89,242.4,104.42,284.1,88.4,321.39,56.44Z" fill="#fff7ed"></path>
@@ -214,11 +209,6 @@
                 <ul class="space-y-2 text-sm text-puja-200">
                     <li><i class="fa-solid fa-envelope mr-2"></i> namaste@divyaessentials.com</li>
                     <li><i class="fa-solid fa-phone mr-2"></i> +91 98765 43210</li>
-                    <li class="mt-4 flex gap-4">
-                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-puja-800 flex items-center justify-center hover:bg-gold-500 hover:text-puja-900 transition-all"><i class="fa-brands fa-whatsapp"></i></a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -232,7 +222,6 @@
 
     <!-- Cart Drawer -->
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white z-50 shadow-2xl flex flex-col border-l border-puja-200">
-        <!-- Cart Header -->
         <div class="px-6 py-4 border-b border-puja-100 flex justify-between items-center bg-puja-50">
             <h2 class="font-heading text-2xl text-puja-800 flex items-center gap-2">
                 <i class="fa-solid fa-basket-shopping text-puja-500"></i> Your Cart
@@ -242,20 +231,15 @@
             </button>
         </div>
 
-        <!-- Cart Items -->
         <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4 bg-gray-50/50">
-            <!-- Empty state (default) -->
             <div id="empty-cart-msg" class="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
                 <i class="fa-solid fa-cart-arrow-down text-5xl text-puja-200"></i>
                 <p class="text-lg">Your sacred basket is empty.</p>
                 <button onclick="document.getElementById('close-cart-btn').click(); window.location.href='#shop'" class="text-puja-600 font-medium hover:underline">Continue Shopping</button>
             </div>
-            
-            <!-- Items will be injected here -->
             <ul id="cart-items-list" class="space-y-4 hidden"></ul>
         </div>
 
-        <!-- Cart Footer -->
         <div class="border-t border-puja-100 p-6 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <div class="flex justify-between items-center mb-4 text-lg font-medium text-gray-800">
                 <span>Subtotal</span>
@@ -271,7 +255,7 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2"></div>
 
-    <!-- Checkout Modal (replaces alert) -->
+    <!-- Checkout Modal -->
     <div id="checkout-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-bg"></div>
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 relative z-10 text-center transform transition-all scale-95 opacity-0 duration-300" id="checkout-modal-content">
@@ -286,9 +270,8 @@
         </div>
     </div>
 
-    <!-- Product Details Page (Full Screen Modal) -->
+    <!-- Product Details Page -->
     <div id="product-details-page" class="fixed inset-0 z-[45] hidden bg-white overflow-y-auto transform transition-transform duration-300 translate-y-full">
-        <!-- Header -->
         <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-puja-200 px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center z-10">
             <button onclick="closeProductDetails()" class="text-gray-600 hover:text-puja-600 font-medium flex items-center gap-2 transition-colors focus:outline-none">
                 <i class="fa-solid fa-arrow-left"></i> Back to Shop
@@ -301,7 +284,6 @@
             </div>
         </div>
         
-        <!-- Dynamic Content Container -->
         <div id="product-details-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
             <!-- Content will be injected here via JavaScript -->
         </div>
@@ -352,58 +334,55 @@
         </div>
     </div>
 
-    <!-- IMPORTANT: Must use CDN links for HTML files, NOT the standard node_modules imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- FIREBASE COMPAT SDKs - Solves local file:// CORS module errors! -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-        // Your exact configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB73_EG0YVkedTOmsJT1y9dzg42Mwydit0",
-            authDomain: "puja-4884a.firebaseapp.com",
-            projectId: "puja-4884a",
-            storageBucket: "puja-4884a.firebasestorage.app",
-            messagingSenderId: "1052643601610",
-            appId: "1:1052643601610:web:940c67c6324293ec0b5833",
-            measurementId: "G-CELXSSH8J7"
-        };
+    <script>
+        // Initialize Firebase
+        let app, db;
+        
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyB73_EG0YVkedTOmsJT1y9dzg42Mwydit0",
+                authDomain: "puja-4884a.firebaseapp.com",
+                projectId: "puja-4884a",
+                storageBucket: "puja-4884a.firebasestorage.app",
+                messagingSenderId: "1052643601610",
+                appId: "1:1052643601610:web:940c67c6324293ec0b5833",
+                measurementId: "G-CELXSSH8J7"
+            };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+            app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log("Firebase connected successfully");
+        } catch (e) {
+            console.error("Critical Firebase Initialization Error:", e);
+        }
 
         // --- State Management ---
         let products = [];
         let cart = [];
 
-        // Expose functions to window for HTML inline handlers
-        window.addToCart = addToCart;
-        window.updateQuantity = updateQuantity;
-        window.removeFromCart = removeFromCart;
-        window.openProductDetails = openProductDetails;
-        window.closeProductDetails = closeProductDetails;
-        window.toggleCart = toggleCart;
-        window.toggleAdminModal = toggleAdminModal;
-
         async function initApp() {
+            if (!db) return;
+            
             try {
-                // Fetching from a simple 'products' collection in your database
-                const productsRef = collection(db, 'products');
-                
-                // Listen to real-time updates directly
-                onSnapshot(productsRef, (snapshot) => {
+                // Listen to real-time updates directly using standard compat syntax
+                db.collection('products').onSnapshot((snapshot) => {
                     products = [];
                     snapshot.forEach(doc => {
                         products.push({ id: doc.id, ...doc.data() });
                     });
                     
                     if (products.length === 0) {
-                        seedInitialProducts(); // Adds a dummy product if db is totally empty
+                        seedInitialProducts(); // Adds a dummy product if db is empty
                     } else {
                         renderProducts();
                     }
                 }, (error) => {
-                    console.error("Error fetching products: Make sure your Firestore Database is created and in Test Mode.", error);
-                    showToast("Failed to load products. Check console for details.");
+                    console.error("Firestore Permission Error:", error);
+                    showToast("Error reading database: Make sure Firestore Rules allow reads.");
                 });
             } catch (err) {
                 console.error("Database connection error", err);
@@ -411,7 +390,7 @@
         }
 
         async function seedInitialProducts() {
-            const productsRef = collection(db, 'products');
+            if (!db) return;
             
             const seedProduct = {
                 name: "Handcrafted Brass Diya",
@@ -431,9 +410,9 @@
                 ]
             };
             try {
-                await addDoc(productsRef, seedProduct);
+                await db.collection('products').add(seedProduct);
             } catch (e) {
-                console.error("Error seeding initial product. Check Firestore rules.", e);
+                console.error("Error seeding initial product:", e);
             }
         }
 
@@ -472,7 +451,6 @@
                 const card = document.createElement('div');
                 card.className = "product-card bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-puja-100 flex flex-col group relative";
                 
-                // Stars rating HTML
                 const stars = Array.from({length: 5}, (_, i) => {
                     if (i < Math.floor(product.rating)) return `<i class="fa-solid fa-star text-gold-400 text-xs"></i>`;
                     if (i < product.rating) return `<i class="fa-solid fa-star-half-stroke text-gold-400 text-xs"></i>`;
@@ -494,12 +472,12 @@
                     <div class="p-5 flex flex-col flex-grow">
                         <div class="flex items-center gap-1 mb-2">
                             ${stars}
-                            <span class="text-xs text-gray-500 ml-1">(${product.reviews})</span>
+                            <span class="text-xs text-gray-500 ml-1">(${product.reviews || 0})</span>
                         </div>
                         <h3 class="font-heading text-lg text-gray-800 leading-tight mb-2 cursor-pointer hover:text-puja-600 transition-colors" onclick="openProductDetails('${product.id}')">${product.name}</h3>
                         <div class="mt-auto pt-4 flex items-center justify-between">
                             <span class="font-bold text-puja-800 text-xl">₹${product.price}</span>
-                            <button onclick="addToCart('${product.id}')" class="w-10 h-10 rounded-full bg-puja-100 text-puja-600 hover:bg-puja-600 hover:text-white flex items-center justify-center transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-puja-500 focus:ring-offset-2" aria-label="Add to cart">
+                            <button onclick="addToCart('${product.id}')" class="w-10 h-10 rounded-full bg-puja-100 text-puja-600 hover:bg-puja-600 hover:text-white flex items-center justify-center transition-colors shadow-sm focus:outline-none" aria-label="Add to cart">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>
@@ -541,7 +519,6 @@
         }
 
         function updateCartUI() {
-            // Update badge
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = totalItems;
             
@@ -553,7 +530,6 @@
                 cartCount.classList.add('scale-0');
             }
 
-            // Update List
             cartItemsList.innerHTML = '';
             let totalPrice = 0;
 
@@ -599,10 +575,8 @@
                 });
             }
 
-            // Update Total
             cartTotalDisplay.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
             
-            // Sync details page cart icon if it exists
             const detailCartCount = document.getElementById('detail-cart-count');
             if(detailCartCount) {
                 detailCartCount.textContent = totalItems;
@@ -623,35 +597,34 @@
             const modal = document.getElementById('product-details-page');
             const content = document.getElementById('product-details-content');
 
-            // Generate Thumbnails HTML (5 images)
-            const thumbnailsHtml = product.gallery.map((imgUrl, idx) => `
+            // Default empty gallery fallback if user didn't provide 5 links
+            const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
+
+            const thumbnailsHtml = gallery.map((imgUrl, idx) => `
                 <button onclick="document.getElementById('main-detail-img').src='${imgUrl}'" 
-                        class="border-2 border-transparent focus:border-puja-500 hover:border-puja-400 rounded-xl overflow-hidden h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 transition-colors shadow-sm focus:outline-none">
-                    <img src="${imgUrl}" class="w-full h-full object-cover" alt="${product.name} View ${idx + 1}">
+                        class="border-2 border-transparent focus:border-puja-500 hover:border-puja-400 rounded-xl overflow-hidden h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 transition-colors shadow-sm focus:outline-none bg-gray-50">
+                    <img src="${imgUrl}" class="w-full h-full object-cover" alt="${product.name} View ${idx + 1}" onerror="this.src='https://placehold.co/400x300/ffedd5/9a3412?text=Image+Missing'">
                 </button>
             `).join('');
 
-            // Generate Stars
             const stars = Array.from({length: 5}, (_, i) => {
-                if (i < Math.floor(product.rating)) return `<i class="fa-solid fa-star text-gold-400"></i>`;
-                if (i < product.rating) return `<i class="fa-solid fa-star-half-stroke text-gold-400"></i>`;
+                const r = product.rating || 5;
+                if (i < Math.floor(r)) return `<i class="fa-solid fa-star text-gold-400"></i>`;
+                if (i < r) return `<i class="fa-solid fa-star-half-stroke text-gold-400"></i>`;
                 return `<i class="fa-regular fa-star text-gray-300"></i>`;
             }).join('');
 
-            // Inject Content
             content.innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-10 lg:gap-16">
-                    <!-- Image Gallery Left -->
                     <div class="lg:w-1/2 flex flex-col gap-4">
                         <div class="w-full aspect-square bg-puja-50 rounded-3xl overflow-hidden shadow-md border border-puja-100">
-                            <img id="main-detail-img" src="${product.gallery[0]}" class="w-full h-full object-cover transition-all duration-300" alt="${product.name}">
+                            <img id="main-detail-img" src="${gallery[0]}" class="w-full h-full object-cover transition-all duration-300" alt="${product.name}" onerror="this.src='https://placehold.co/800x800/ffedd5/9a3412?text=Image+Missing'">
                         </div>
                         <div class="flex gap-4 overflow-x-auto py-2 hide-scrollbar">
                             ${thumbnailsHtml}
                         </div>
                     </div>
                     
-                    <!-- Details Right -->
                     <div class="lg:w-1/2 flex flex-col justify-center">
                         ${product.badge ? `<span class="bg-puja-100 text-puja-800 text-xs font-bold px-3 py-1 rounded-full w-max mb-4 uppercase tracking-wider">${product.badge}</span>` : ''}
                         
@@ -662,7 +635,7 @@
                             <div class="h-6 w-px bg-gray-300"></div>
                             <div class="flex items-center gap-2">
                                 <div class="flex text-sm">${stars}</div>
-                                <span class="text-gray-500 font-medium">(${product.reviews} reviews)</span>
+                                <span class="text-gray-500 font-medium">(${product.reviews || 0} reviews)</span>
                             </div>
                         </div>
                         
@@ -691,13 +664,12 @@
                 </div>
             `;
 
-            // Open Modal with animation
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modal.classList.remove('translate-y-full');
             }, 10);
             document.body.style.overflow = 'hidden';
-            window.scrollTo(0, 0); // Scroll to top for details
+            window.scrollTo(0, 0);
         }
 
         function closeProductDetails() {
@@ -778,34 +750,38 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
-                const newProduct = {
-                    name: document.getElementById('admin-name').value,
-                    price: parseFloat(document.getElementById('admin-price').value),
-                    description: document.getElementById('admin-desc').value,
-                    badge: document.getElementById('admin-badge').value || null,
-                    rating: 5.0,
-                    reviews: 0,
-                    image: document.getElementById('admin-img-1').value,
-                    fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Product",
-                    gallery: [
-                        document.getElementById('admin-img-1').value,
-                        document.getElementById('admin-img-2').value || null,
-                        document.getElementById('admin-img-3').value || null,
-                        document.getElementById('admin-img-4').value || null,
-                        document.getElementById('admin-img-5').value || null
-                    ].filter(Boolean)
-                };
-
                 try {
-                    // Saves directly to your 'products' collection
-                    const productsRef = collection(db, 'products');
-                    await addDoc(productsRef, newProduct);
+                    const newProduct = {
+                        name: document.getElementById('admin-name').value,
+                        price: parseFloat(document.getElementById('admin-price').value),
+                        description: document.getElementById('admin-desc').value,
+                        badge: document.getElementById('admin-badge').value || null,
+                        rating: 5.0,
+                        reviews: 0,
+                        image: document.getElementById('admin-img-1').value,
+                        fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Product",
+                        gallery: [
+                            document.getElementById('admin-img-1').value,
+                            document.getElementById('admin-img-2').value || null,
+                            document.getElementById('admin-img-3').value || null,
+                            document.getElementById('admin-img-4').value || null,
+                            document.getElementById('admin-img-5').value || null
+                        ].filter(Boolean)
+                    };
+
+                    const savePromise = db.collection('products').add(newProduct);
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error("Connection timeout! Check your Firestore Rules.")), 8000);
+                    });
+
+                    await Promise.race([savePromise, timeoutPromise]);
+                    
                     showToast("Product added successfully!");
                     adminForm.reset();
                     toggleAdminModal();
                 } catch (error) {
-                    console.error("Error adding product. Check Firestore Rules.", error);
-                    showToast("Error adding product. Please make sure Firestore is in Test Mode.");
+                    console.error("Error adding product:", error);
+                    showToast(error.message || "Error adding product. Check console.");
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = 'Save Product';
