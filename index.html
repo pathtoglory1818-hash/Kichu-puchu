@@ -108,6 +108,7 @@
                         <a href="#" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">Home</a>
                         <a href="#shop" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">Shop</a>
                         <a href="#about" class="text-gray-600 hover:text-puja-600 font-medium transition-colors">About Us</a>
+                        <button onclick="toggleAdminModal()" class="text-gray-600 hover:text-puja-600 font-medium transition-colors"><i class="fa-solid fa-lock"></i> Admin</button>
                     </nav>
                     
                     <button id="cart-btn" class="relative p-2 text-gray-600 hover:text-puja-600 transition-colors focus:outline-none" aria-label="Open Cart">
@@ -306,11 +307,113 @@
         </div>
     </div>
 
-    <script>
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm modal-bg" onclick="toggleAdminModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative z-10">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-heading text-2xl text-puja-800">Add New Product</h3>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-red-500 transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="admin-add-product-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                        <input type="text" id="admin-name" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" id="admin-price" required min="0" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="admin-desc" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Badge (Optional, e.g., Bestseller)</label>
+                    <input type="text" id="admin-badge" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 focus:border-puja-500 outline-none">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Image URLs (Provide up to 5)</label>
+                    <input type="url" id="admin-img-1" required placeholder="Main Image URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-2" placeholder="Image 2 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-3" placeholder="Image 3 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-4" placeholder="Image 4 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                    <input type="url" id="admin-img-5" placeholder="Image 5 URL" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-puja-500 outline-none">
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="toggleAdminModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" id="admin-submit-btn" class="px-6 py-2 bg-puja-600 text-white rounded-lg hover:bg-puja-700 transition-colors shadow-md">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- IMPORTANT: Must use CDN links for HTML files, NOT the standard node_modules imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your exact configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB73_EG0YVkedTOmsJT1y9dzg42Mwydit0",
+            authDomain: "puja-4884a.firebaseapp.com",
+            projectId: "puja-4884a",
+            storageBucket: "puja-4884a.firebasestorage.app",
+            messagingSenderId: "1052643601610",
+            appId: "1:1052643601610:web:940c67c6324293ec0b5833",
+            measurementId: "G-CELXSSH8J7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         // --- State Management ---
-        const products = [
-            {
-                id: 1,
+        let products = [];
+        let cart = [];
+
+        // Expose functions to window for HTML inline handlers
+        window.addToCart = addToCart;
+        window.updateQuantity = updateQuantity;
+        window.removeFromCart = removeFromCart;
+        window.openProductDetails = openProductDetails;
+        window.closeProductDetails = closeProductDetails;
+        window.toggleCart = toggleCart;
+        window.toggleAdminModal = toggleAdminModal;
+
+        async function initApp() {
+            try {
+                // Fetching from a simple 'products' collection in your database
+                const productsRef = collection(db, 'products');
+                
+                // Listen to real-time updates directly
+                onSnapshot(productsRef, (snapshot) => {
+                    products = [];
+                    snapshot.forEach(doc => {
+                        products.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    if (products.length === 0) {
+                        seedInitialProducts(); // Adds a dummy product if db is totally empty
+                    } else {
+                        renderProducts();
+                    }
+                }, (error) => {
+                    console.error("Error fetching products: Make sure your Firestore Database is created and in Test Mode.", error);
+                    showToast("Failed to load products. Check console for details.");
+                });
+            } catch (err) {
+                console.error("Database connection error", err);
+            }
+        }
+
+        async function seedInitialProducts() {
+            const productsRef = collection(db, 'products');
+            
+            const seedProduct = {
                 name: "Handcrafted Brass Diya",
                 price: 450,
                 rating: 4.8,
@@ -326,136 +429,24 @@
                     "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Lit",
                     "https://placehold.co/800x800/ffedd5/9a3412?text=Brass+Diya+Base"
                 ]
-            },
-            {
-                id: 2,
-                name: "Mysore Sandalwood Agarbatti",
-                price: 120,
-                rating: 4.9,
-                reviews: 89,
-                image: "https://images.unsplash.com/photo-1600180766512-40f4388147d3?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Sandalwood+Incense",
-                badge: null,
-                description: "Experience the calming and spiritual aroma of authentic Mysore Sandalwood. These hand-rolled agarbattis burn slowly, leaving a lingering divine fragrance perfect for meditation and aarti.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1600180766512-40f4388147d3?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Agarbatti+Box",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Incense+Sticks+Close-up",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Burning+Incense+Smoke",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Agarbatti+Stand"
-                ]
-            },
-            {
-                id: 3,
-                name: "Pure A2 Cow Ghee (500ml)",
-                price: 850,
-                rating: 5.0,
-                reviews: 210,
-                image: "https://images.unsplash.com/photo-1601055903647-8f192b0051cb?auto=format&fit=crop&w=400&q=80", 
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Cow+Ghee",
-                badge: "Pure",
-                description: "100% pure, unadulterated A2 cow ghee traditionally churned using the bilona method. Ideal for lighting akhand jyoti and offering in homams. Enhances positive energy.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1601055903647-8f192b0051cb?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Ghee+Jar+Front",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Ghee+Texture",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Ghee+Pouring",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Ghee+Label+Details"
-                ]
-            },
-            {
-                id: 4,
-                name: "Copper Puja Thali Set",
-                price: 1299,
-                rating: 4.7,
-                reviews: 56,
-                image: "https://images.unsplash.com/photo-1599814470650-6531398d5c41?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Puja+Thali",
-                badge: "Gift Choice",
-                description: "A complete copper thali set containing a plate, lota, agarbatti stand, diya, and a small bell. Copper is considered highly auspicious for storing holy water and offering prayers.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1599814470650-6531398d5c41?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Thali+Full+Set",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Copper+Lota",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Copper+Bell",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Thali+Engraving"
-                ]
-            },
-            {
-                id: 5,
-                name: "Bhimseni Camphor (100g)",
-                price: 250,
-                rating: 4.6,
-                reviews: 42,
-                image: "https://images.unsplash.com/photo-1621244837581-22921c5bc79f?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Camphor",
-                badge: null,
-                description: "Pure, edible-grade Bhimseni Kapoor that burns completely without leaving any residue or ash. Cleanses the environment and diffuses a naturally cooling, spiritual fragrance.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1621244837581-22921c5bc79f?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Camphor+Crystals",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Camphor+Jar",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Burning+Camphor",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Camphor+Purity+Test"
-                ]
-            },
-            {
-                id: 6,
-                name: "Kumkum & Haldi Combo",
-                price: 150,
-                rating: 4.5,
-                reviews: 78,
-                image: "https://images.unsplash.com/photo-1616422285623-1498b89e6eb1?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Haldi+Kumkum",
-                badge: null,
-                description: "Organic turmeric (haldi) and chemical-free vermilion (kumkum) sourced directly from temple towns. Essential for tilak, welcoming guests, and all vedic rituals.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1616422285623-1498b89e6eb1?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Kumkum+Powder",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Haldi+Powder",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Combo+Pack",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Applied+Tilak"
-                ]
-            },
-            {
-                id: 7,
-                name: "Cotton Wicks (Round, 500 pcs)",
-                price: 90,
-                rating: 4.8,
-                reviews: 312,
-                image: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Cotton+Wicks",
-                badge: "Essential",
-                description: "Premium, tightly rolled round cotton wicks (phool batti) that ensure a steady, long-lasting flame. Perfectly sized for standard diyas and oil lamps.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Wicks+Pile",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Wick+Close-up",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Wicks+in+Packet",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Wick+in+Oil"
-                ]
-            },
-            {
-                id: 8,
-                name: "Ganga Jal (Holy Water, 250ml)",
-                price: 199,
-                rating: 4.9,
-                reviews: 155,
-                image: "https://images.unsplash.com/photo-1534069818815-562a98f1f8b1?auto=format&fit=crop&w=400&q=80",
-                fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Ganga+Jal",
-                badge: null,
-                description: "Sourced directly from the pristine origins of Gangotri, this holy water is sealed to retain its purity. Used for sprinkling in the house, bathing deities, and religious ceremonies.",
-                gallery: [
-                    "https://images.unsplash.com/photo-1534069818815-562a98f1f8b1?auto=format&fit=crop&w=800&q=80",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Ganga+Jal+Bottle",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Bottle+Seal",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Pouring+Holy+Water",
-                    "https://placehold.co/800x800/ffedd5/9a3412?text=Gangotri+Source"
-                ]
+            };
+            try {
+                await addDoc(productsRef, seedProduct);
+            } catch (e) {
+                console.error("Error seeding initial product. Check Firestore rules.", e);
             }
-        ];
+        }
 
-        let cart = [];
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
 
         // --- DOM Elements ---
         const productsGrid = document.getElementById('products-grid');
@@ -475,7 +466,6 @@
         const checkoutModalContent = document.getElementById('checkout-modal-content');
         const closeCheckoutModalBtn = document.getElementById('close-checkout-modal');
 
-        // --- STREAMING_CHUNK:Rendering products dynamically into the grid... ---
         function renderProducts() {
             productsGrid.innerHTML = '';
             products.forEach(product => {
@@ -493,7 +483,7 @@
 
                 card.innerHTML = `
                     ${badgeHtml}
-                    <div class="relative h-56 overflow-hidden bg-puja-50 cursor-pointer" onclick="openProductDetails(${product.id})">
+                    <div class="relative h-56 overflow-hidden bg-puja-50 cursor-pointer" onclick="openProductDetails('${product.id}')">
                         <img src="${product.image}" onerror="this.src='${product.fallback}'" alt="${product.name}" class="product-img w-full h-full object-cover transition-transform duration-500">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300">
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -506,10 +496,10 @@
                             ${stars}
                             <span class="text-xs text-gray-500 ml-1">(${product.reviews})</span>
                         </div>
-                        <h3 class="font-heading text-lg text-gray-800 leading-tight mb-2 cursor-pointer hover:text-puja-600 transition-colors" onclick="openProductDetails(${product.id})">${product.name}</h3>
+                        <h3 class="font-heading text-lg text-gray-800 leading-tight mb-2 cursor-pointer hover:text-puja-600 transition-colors" onclick="openProductDetails('${product.id}')">${product.name}</h3>
                         <div class="mt-auto pt-4 flex items-center justify-between">
                             <span class="font-bold text-puja-800 text-xl">₹${product.price}</span>
-                            <button onclick="addToCart(${product.id})" class="w-10 h-10 rounded-full bg-puja-100 text-puja-600 hover:bg-puja-600 hover:text-white flex items-center justify-center transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-puja-500 focus:ring-offset-2" aria-label="Add to cart">
+                            <button onclick="addToCart('${product.id}')" class="w-10 h-10 rounded-full bg-puja-100 text-puja-600 hover:bg-puja-600 hover:text-white flex items-center justify-center transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-puja-500 focus:ring-offset-2" aria-label="Add to cart">
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                         </div>
@@ -519,7 +509,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK:Implementing cart logic and state management... ---
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -596,11 +585,11 @@
                             </div>
                             <div class="flex flex-1 items-end justify-between text-sm mt-2">
                                 <div class="flex items-center border border-gray-200 rounded-lg">
-                                    <button onclick="updateQuantity(${item.id}, -1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-l-lg transition-colors"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                    <button onclick="updateQuantity('${item.id}', -1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-l-lg transition-colors"><i class="fa-solid fa-minus text-[10px]"></i></button>
                                     <span class="px-2 text-gray-700 font-medium">${item.quantity}</span>
-                                    <button onclick="updateQuantity(${item.id}, 1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-r-lg transition-colors"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    <button onclick="updateQuantity('${item.id}', 1)" class="px-2 py-1 text-gray-500 hover:text-puja-600 hover:bg-puja-50 rounded-r-lg transition-colors"><i class="fa-solid fa-plus text-[10px]"></i></button>
                                 </div>
-                                <button type="button" onclick="removeFromCart(${item.id})" class="font-medium text-red-500 hover:text-red-700 transition-colors">
+                                <button type="button" onclick="removeFromCart('${item.id}')" class="font-medium text-red-500 hover:text-red-700 transition-colors">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </button>
                             </div>
@@ -627,7 +616,6 @@
             }
         }
 
-        // --- STREAMING_CHUNK:Handling Product Details Page logic... ---
         function openProductDetails(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -692,10 +680,10 @@
                         </div>
 
                         <div class="mt-10 pt-8 border-t border-puja-100 flex flex-col sm:flex-row gap-4">
-                            <button onclick="addToCart(${product.id})" class="flex-1 bg-puja-600 hover:bg-puja-700 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 text-lg">
+                            <button onclick="addToCart('${product.id}')" class="flex-1 bg-puja-600 hover:bg-puja-700 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 text-lg">
                                 <i class="fa-solid fa-cart-plus"></i> Add to Cart
                             </button>
-                            <button onclick="addToCart(${product.id}); toggleCart();" class="flex-1 bg-white hover:bg-puja-50 text-puja-700 border-2 border-puja-600 font-bold py-4 px-8 rounded-full shadow-sm transition-all duration-300 flex items-center justify-center gap-3 text-lg">
+                            <button onclick="addToCart('${product.id}'); toggleCart();" class="flex-1 bg-white hover:bg-puja-50 text-puja-700 border-2 border-puja-600 font-bold py-4 px-8 rounded-full shadow-sm transition-all duration-300 flex items-center justify-center gap-3 text-lg">
                                 Buy it Now
                             </button>
                         </div>
@@ -705,7 +693,6 @@
 
             // Open Modal with animation
             modal.classList.remove('hidden');
-            // small delay to allow display:block to apply before animating transform
             setTimeout(() => {
                 modal.classList.remove('translate-y-full');
             }, 10);
@@ -720,10 +707,9 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
-            }, 300); // match duration-300
+            }, 300);
         }
 
-        // --- STREAMING_CHUNK:Handling UI interactions (Toasts, Modals, Drawer)... ---
         function toggleCart() {
             const isOpen = cartDrawer.classList.contains('open');
             if (isOpen) {
@@ -746,7 +732,6 @@
             `;
             toastContainer.appendChild(toast);
 
-            // Remove toast after animation completes
             setTimeout(() => {
                 toast.remove();
             }, 3000);
@@ -755,18 +740,14 @@
         function handleCheckout() {
             if (cart.length === 0) return;
             
-            // Close Cart Drawer
             toggleCart();
             
-            // Show custom checkout success modal
             checkoutModal.classList.remove('hidden');
-            // small delay for transition
             setTimeout(() => {
                 checkoutModalContent.classList.remove('scale-95', 'opacity-0');
                 checkoutModalContent.classList.add('scale-100', 'opacity-100');
             }, 10);
 
-            // Clear cart
             cart = [];
             updateCartUI();
         }
@@ -786,12 +767,54 @@
         cartOverlay.addEventListener('click', toggleCart);
         checkoutBtn.addEventListener('click', handleCheckout);
         closeCheckoutModalBtn.addEventListener('click', closeCheckoutModal);
-        
-        // Close modal on outside click
         checkoutModal.querySelector('.modal-bg').addEventListener('click', closeCheckoutModal);
 
+        const adminForm = document.getElementById('admin-add-product-form');
+        if (adminForm) {
+            adminForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('admin-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+                const newProduct = {
+                    name: document.getElementById('admin-name').value,
+                    price: parseFloat(document.getElementById('admin-price').value),
+                    description: document.getElementById('admin-desc').value,
+                    badge: document.getElementById('admin-badge').value || null,
+                    rating: 5.0,
+                    reviews: 0,
+                    image: document.getElementById('admin-img-1').value,
+                    fallback: "https://placehold.co/400x300/ffedd5/9a3412?text=Product",
+                    gallery: [
+                        document.getElementById('admin-img-1').value,
+                        document.getElementById('admin-img-2').value || null,
+                        document.getElementById('admin-img-3').value || null,
+                        document.getElementById('admin-img-4').value || null,
+                        document.getElementById('admin-img-5').value || null
+                    ].filter(Boolean)
+                };
+
+                try {
+                    // Saves directly to your 'products' collection
+                    const productsRef = collection(db, 'products');
+                    await addDoc(productsRef, newProduct);
+                    showToast("Product added successfully!");
+                    adminForm.reset();
+                    toggleAdminModal();
+                } catch (error) {
+                    console.error("Error adding product. Check Firestore Rules.", error);
+                    showToast("Error adding product. Please make sure Firestore is in Test Mode.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Save Product';
+                }
+            });
+        }
+
         // Initialize App
-        renderProducts();
+        initApp();
         updateCartUI();
 
     </script>
